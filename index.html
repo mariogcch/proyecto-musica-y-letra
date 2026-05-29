@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <title>Leo dan - A la sombra de mi madre</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 2rem;
+      background: linear-gradient(-45deg, #0f2027, #203a43, #2c5364, #1c1c1c);
+      background-size: 400% 400%;
+      animation: gradient 10s ease infinite;
+      color: #fff;
+      font-family: 'Noto Sans JP', sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    @keyframes gradient {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    h1 {
+      font-size: 1.5rem;
+      color: #ccc;
+      margin-bottom: 1rem;
+    }
+
+    audio {
+      margin-top: 1rem;
+    }
+
+    #karaoke-line {
+      position: relative;
+      margin-top: 4rem;
+      font-size: 2.2rem;
+      font-weight: 600;
+      text-align: center;
+      min-height: 3rem;
+      padding: 0.5rem 1rem;
+      border-radius: 12px;
+      animation: fadeInUp 0.5s ease;
+      white-space: pre-line;
+      text-shadow: 0 0 6px rgba(255,255,255,0.8), 0 0 12px rgba(255,255,255,0.4);
+      background: rgba(255, 255, 255, 0.06);
+      backdrop-filter: blur(6px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      overflow: visible;
+    }
+
+    .hidden {
+      opacity: 1;
+    }
+
+    #startBtn {
+      margin-top: 2rem;
+      padding: 0.6rem 2rem;
+      font-size: 1rem;
+      background-color: #ff4081;
+      color: white;
+      border: none;
+      border-radius: 30px;
+      cursor: pointer;
+      font-weight: bold;
+      box-shadow: 0 4px 12px rgba(255, 64, 129, 0.4);
+      transition: background 0.3s;
+    }
+
+    #startBtn:hover {
+      background-color: #e91e63;
+    }
+
+    /*@keyframes fadeInUpWord {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }*/
+
+    .word {
+      display: inline-block;
+      margin: 0 0.3rem;
+      animation: fadeInUpWord 0.6s ease forwards;
+      opacity: 1;
+    }
+  </style>
+</head>
+<body>
+  <h1>Leo Dan - A la sombra de mi madre</h1>
+
+  <audio id="audio" src="audio/Leo-Dan_A-la-sombra-de-mi-madre.mp3" controls></audio>
+  <button id="startBtn">Iniciar</button>
+
+  <div id="karaoke-line" class="hidden">♪</div>
+
+  <script>
+    const audio = document.getElementById('audio');
+    const karaokeLine = document.getElementById('karaoke-line');
+    const startBtn = document.getElementById('startBtn');
+
+    const lrcLines = [
+      [19.08, "Todos tienen una madre"],
+      [22.29, "Ninguna como la mía"],
+      [26.00, "Que arde como lucecita"],
+      [29.39, "Haciéndome compañía"],
+      [33.52, "La vieran dentro mi rancho"],
+      [37.85, "Sencillita como es ella"],
+      [40.98, "Y sus ojitos se apagan"],
+      [44.23, "Como el fulgor de una estrella"],
+      [48.96, "Yo le pido a Dios rezando"],
+      [52.99, "Que mi mamá no se muera"],
+      [56.03, "Que viva dentro mi rancho"],
+      [59.26, "Como estampita siquiera"],
+      [63.53, "Yo le pido a Dios rezando"],
+      [66.98, "Que mi mamá no se muera"],
+      [71.57, "Que viva dentro mi rancho"],
+      [73.72, "Como estampita siquiera"],
+      [78.49, "Si alguna vez, madrecita"],
+      [83.39, "Tú te me vas para el cielo"],
+      [85.84, "Llévame, madre querida"],
+      [87.93, "No me dejes"],
+      [89.32, "No me dejes"],
+      [90.97, "Yo te quiero"],
+      [95.44, "Pero su sombra me alcanza"],
+      [98.69, "Como bendición divina"],
+      [102.46, "Es el ángel de la guarda"],
+      [105.53, "De mi vida peregrina"],
+      [109.34, "Sombra del árbol plantado"],
+      [113.78, "En el patio solariego"],
+      [117.22, "Retoño fiel que traduce"],
+      [120.52, "La voluntad de mis ruegos"],
+      [125.17, "Yo le pido a Dios rezando"],
+      [128.66, "Que mi mamá no se muera"],
+      [132.57, "Que viva dentro mi rancho"],
+      [135.46, "Como estampita siquiera"],
+      [139.72, "Yo le pido a Dios rezando"],
+      [143.35, "Que mi mamá no se muera"],
+      [146.88, "Que viva dentro mi rancho"],
+      [149.91, "Como estampita siquiera"]
+    ];
+
+    let intervalId;
+
+    function iniciarKaraoke() {
+      startBtn.disabled = true;
+      karaokeLine.classList.remove('hidden');
+      audio.play();
+
+      intervalId = setInterval(() => {
+        const currentTime = audio.currentTime;
+        let current = "";
+
+        for (let i = 0; i < lrcLines.length; i++) {
+          const [start, line] = lrcLines[i];
+          const nextStart = (i + 1 < lrcLines.length) ? lrcLines[i + 1][0] : Infinity;
+          if (currentTime >= start && currentTime < nextStart) {
+            current = line;
+            break;
+          }
+        }
+
+        if (current) {
+          karaokeLine.innerHTML = '';
+          const words = current.split(' ');
+          words.forEach((word, idx) => {
+            const span = document.createElement('span');
+            span.classList.add('word');
+            span.textContent = word;
+            span.style.animationDelay = `${idx * 0.15}s`;
+            karaokeLine.appendChild(span);
+          });
+        } else {
+          karaokeLine.innerHTML = '';
+        }
+      }, 100);
+    }
+
+    startBtn.addEventListener('click', iniciarKaraoke);
+  </script>
+</body>
+</html>
